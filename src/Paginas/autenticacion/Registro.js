@@ -14,7 +14,9 @@ const Registro = () => {
 
   const { nombres, correo, password, confirmar } = usuario;
 
-  console.log(`estos son los datos que ingreste ${usuario.nombres}, ${usuario.correo}, ${usuario.password}, ${usuario.confirmar}`);
+  console.log(
+    `estos son los datos que ingreste ${usuario.nombres}, ${usuario.correo}, ${usuario.password}, ${usuario.confirmar}`
+  );
 
   const onChange = (e) => {
     setUsuario({
@@ -70,10 +72,11 @@ const Registro = () => {
           password: usuario.password,
         };
         const response = await APIInvoke.invokePOST("/api/usuarios", data);
-        const mensaje = response.men;
+        const mensaje = response.msg;
+        console.log("mensaje de error fuera del if", mensaje);
 
-        if (mensaje === "el usuario ya existe") {
-          const msg = "el usuario ya existe";
+        if (mensaje === "El usuario ya existe") {
+          const msg = "El usuario ya existe";
 
           swal({
             title: "Error",
@@ -189,7 +192,6 @@ const Registro = () => {
                 </div>
               </div>
 
-
               <div className="input-group mb-3">
                 <input
                   type="password"
@@ -207,7 +209,6 @@ const Registro = () => {
                   </div>
                 </div>
               </div>
-
 
               <div className="social-auth-links text-center" mb-3>
                 <button type="submit" className="btn btn-primary btn-block">
