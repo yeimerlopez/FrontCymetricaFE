@@ -12,9 +12,9 @@ const MostrarClientes = () => {
     const [clientes, setClientess] = useState([]);
 
     const getClientes = async () => {
-        const response = await APIInvoke.invokeGET(`/api/rutas/clientes/find`);
+        const response = await APIInvoke.invokeGET(`/api/clientes`);
         
-        setClientess(response.clientes);
+        setClientess(response.cliente);
     }
 
     useEffect(() => {

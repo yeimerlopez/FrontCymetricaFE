@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import ContentHeader from "../../Componentes/ContentHeader";
 import Footer from "../../Componentes/Footer";
 import Navbar from "../../Componentes/Navbar";
 import SidebarContainer from "../../Componentes/SidebarContainer";
-import APIInvoke from "../../val/APIInvoke";
+import { useNavigate } from "react-router-dom";
+import APIInvoke from "../../archivoApi/APIInvoke";
 import swal from "sweetalert";
 
-function AgregarClientes() {
+const AgregarClientes = () => {
   const navigate = useNavigate();
 
-  const [clientes, setCliente] = useState({
+  const [clientes, setClientes] = useState({
     nombres: "",
     apellidos: "",
     documento: "",
@@ -19,22 +19,21 @@ function AgregarClientes() {
     direccion: "",
   });
 
-  const { nombres, apellidos, documento, correo, telefono, direccion } = cliente;
-
- 
+  const { nombres, apellidos, documento, correo, telefono, direccion } =
+    clientes;
 
   useEffect(() => {
     document.getElementById("nombres").focus();
   }, []);
 
   const onChange = (e) => {
-    setCliente({
+    setClientes({
       ...clientes,
       [e.target.name]: e.target.value,
     });
   };
 
-  const crearClientes = async () => {
+  const crearCliente = async () => {
     const data = {
       nombres: clientes.nombres,
       apellidos: clientes.apellidos,
@@ -44,30 +43,31 @@ function AgregarClientes() {
       direccion: clientes.direccion,
     };
 
-    const response = await APIInvoke.invokePOST(`/api/rutas/clientes`, data);
+    const response = await APIInvoke.invokePOST("/api/clientes/createClient", data);
+    const idClientes = response._id;
 
-    const idCliente = response.cliente._id;
-
-    if (idCliente === "") {
-      const msg = "hubo un error al crear el cliente";
+    if (idClientes === "") {
+      const msg = "hubo un error al agregar un cliente";
       swal({
-        title: "Información",
+        title: "Error",
         text: msg,
-        icon: "success",
+        icon: "error",
         buttons: {
           confirm: {
             text: "Ok",
             value: true,
             visible: true,
-            className: "btn btn-primary",
+            className: "btn btn-danger",
             closeModal: true,
           },
         },
       });
     } else {
-      const msg = "El cliente fue creado correctamente";
+      navigate("/clientes");
+
+      const msg = "El cliente fue creado con exito";
       swal({
-        title: "Información",
+        title: "Informacion",
         text: msg,
         icon: "success",
         buttons: {
@@ -80,7 +80,7 @@ function AgregarClientes() {
           },
         },
       });
-      setCliente({
+      setClientes({
         nombres: "",
         apellidos: "",
         documento: "",
@@ -93,21 +93,185 @@ function AgregarClientes() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    crearClientes();
+    crearCliente();
   };
 
   return (
-    <div>
+    <div className="wrapper">
       <Navbar></Navbar>
       <SidebarContainer></SidebarContainer>
-      <ContentHeader
-        titulo={"Agregar Clientes"}
-        breadCrumb1={"Listado de Clientes"}
-        breadCrumb2={"Creacion"}
-        ruta1={"/clientes/agregar"}
-      ></ContentHeader>
+      <div className="content-wrapper">
+        <ContentHeader
+          titulo={"Creacion de Clientes"}
+          breadCrumb1={"Listado de clientes"}
+          breadCrumb2={"Creacion"}
+          ruta1={"/clientes/agregar"}
+        />
+
+        <section className="content">
+          <div className="card">
+            <div className="card-header">
+              <div className="card-tools">
+                <button
+                  type="button"
+                  className="btn btn-tool"
+                  data-card-widget="collapse"
+                  title="Collapse"
+                >
+                  <i className="fas fa-minus" />
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-tool"
+                  data-card-widget="remove"
+                  title="Remove"
+                >
+                  <i className="fas fa-times" />
+                </button>
+              </div>
+            </div>
+
+            <div className="card-body">
+              <form onSubmit={onSubmit}>
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="nombres">Nombres</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="nombres"
+                      name="nombres"
+                      placeholder="ingrese el nombres del Cliente"
+                      value={nombres}
+                      onChange={onChange}
+                      required
+                    />
+                    <div className="input-group-append">
+                      <div className="input-group-text">
+                        <span className="fas fa-envelope" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="nombres">Apellidos</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="apellidos"
+                      name="apellidos"
+                      placeholder="ingrese el apellidos del Cliente"
+                      value={apellidos}
+                      onChange={onChange}
+                      required
+                    />
+                    <div className="input-group-append">
+                      <div className="input-group-text">
+                        <span className="fas fa-envelope" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="nombres">Documento</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="documento"
+                      name="documento"
+                      placeholder="ingrese el documento del Cliente"
+                      value={documento}
+                      onChange={onChange}
+                      required
+                    />
+                    <div className="input-group-append">
+                      <div className="input-group-text">
+                        <span className="fas fa-envelope" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="nombres">Correo</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="correo"
+                      name="correo"
+                      placeholder="ingrese el correo del Cliente"
+                      value={correo}
+                      onChange={onChange}
+                      required
+                    />
+                    <div className="input-group-append">
+                      <div className="input-group-text">
+                        <span className="fas fa-envelope" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="nombres">Telefono</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="telefono"
+                      name="telefono"
+                      placeholder="ingrese el apellidos del Cliente"
+                      value={telefono}
+                      onChange={onChange}
+                      required
+                    />
+                    <div className="input-group-append">
+                      <div className="input-group-text">
+                        <span className="fas fa-envelope" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="nombres">Direccion</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="direccion"
+                      name="direccion"
+                      placeholder="ingrese el apellidos del Cliente"
+                      value={direccion}
+                      onChange={onChange}
+                      required
+                    />
+                    <div className="input-group-append">
+                      <div className="input-group-text">
+                        <span className="fas fa-envelope" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-footer">
+                  <button type="submit" className="btn btn-primary">
+                    Agregar cliente
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </div>
+      <Footer></Footer>
     </div>
   );
-}
+};
 
 export default AgregarClientes;
