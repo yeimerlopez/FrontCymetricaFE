@@ -1,5 +1,5 @@
 module.exports = {
-    api:{
-        URL: 'http://localhost:4000'
-    }
-}
+  api: {
+    URL: "http://localhost:5000",
+  },
+};

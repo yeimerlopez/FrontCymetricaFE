@@ -1,117 +1,140 @@
-// import React, { useState, useEffect } from "react";
-// import { Link } from "react-router-dom";
-// import ContentHeader from "../../Componentes/ContentHeader";
-// import Footer from "../../Componentes/Footer";
-// import Navbar from "../../Componentes/Navbar";
-// import SidebarContainer from "../../Componentes/SidebarContainer";
-// import APIInvoke from "../../archivoApi/APIInvoke";
-// import swal from "sweetalert";
-// import React from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-// const EditarClientes = () => {
-//   const navigate = useNavigate();
+const URL = "http://localhost:5000/api/clientes/";
 
-//   const { idClientes } = useParams();
-//   let res = idClientes.split("@");
-//   const ncliente = res[1];
+const ModificarCliente = () => {
+  const [nombres, setNombres] = useState("");
+  const [apellidos, setApellidos] = useState("");
+  const [documento, setDocumento] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [direccion, setDireccion] = useState("");
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-//   const [cliente, setCliente] = useState({
-//     nombres: ncliente,
-//     apellidos: ncliente,
-//     documento: ncliente,
-//     correo: ncliente,
-//     telefono: ncliente,
-//     direccion: ncliente,
-//   });
+  const guardarCliente = async (e) => {
+    e.preventDefault();
+    await axios.put(`${URL}${id}`, {
+      nombres,
+      apellidos,
+      documento,
+      correo,
+      telefono,
+      direccion,
+    });
+    navigate("/clientes");
+  };
+  useEffect(() => {
+    getClientesByID();
+    //eslint-disable-next-line
+  }, []);
+  const irAClientes = () => {
+    navigate("/clientes");
+  };
+  const getClientesByID = async () => {
+    const res = await axios.get(`${URL}${id}`);
+    setNombres(res.data.nombres);
+    setApellidos(res.data.apellidos);
+    setDocumento(res.data.documento);
+    setCorreo(res.data.correo);
+    setTelefono(res.data.telefono);
+    setDireccion(res.data.direccion);
+  };
+  return (
+    <div className="container contenedor mx-auto" style={{ maxWidth: "800px" }}>
+      <h3 className="text-center">Modificar Cliente</h3>
+      <form onSubmit={guardarCliente}>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">Nombres</label>
+              <input
+                value={nombres}
+                onChange={(e) => setNombres(e.target.value)}
+                type="text"
+                className="form-control"
+                placeholder="Ingrese los nombres"
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Apellidos</label>
+              <input
+                value={apellidos}
+                onChange={(e) => setApellidos(e.target.value)}
+                type="text"
+                className="form-control"
+                placeholder="Ingrese los apellidos"
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Documento</label>
+              <input
+                value={documento}
+                onChange={(e) => setDocumento(e.target.value)}
+                type="number"
+                className="form-control"
+                placeholder="Ingrese el número de documento"
+                required
+              />
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">Correo</label>
+              <input
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
+                type="text"
+                className="form-control"
+                placeholder="Ingrese el correo electrónico"
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Teléfono</label>
+              <input
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                type="number"
+                className="form-control"
+                placeholder="Ingrese el número de teléfono"
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Dirección</label>
+              <input
+                value={direccion}
+                onChange={(e) => setDireccion(e.target.value)}
+                type="text"
+                className="form-control"
+                placeholder="Ingrese la dirección"
+                required
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row mt-3">
+          <div className="col-md-12 text-center">
+            <button
+              type="button"
+              onClick={irAClientes}
+              className="btn btn-secondary me-2"
+            >
+              Cancelar
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Guardar Cambios
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+};
 
-//   const { nombres, apellidos, documento, correo, telefono, direccion } =
-//     cliente;
-
-//   useEffect(() => {
-//     document.getElementById("nombres").focus();
-//   });
-
-//   const onChange = (e) => {
-//     setCliente({
-//       ...cliente,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
-
-//   const addCliente = async () => {
-//     let res = idclientes.split("@");
-//     const idClientes = res[0];
-
-//     const data = {
-//       nombres: Clientes.nombres,
-//       apellidos: Clientes.apellidos,
-//       documento: Clientes.documento,
-//       correo: Clientes.correo,
-//       telefono: Clientes.telefono,
-//       direccion: Clientes.direccion,
-//     };
-
-//     const response = await APIInvoke.invokePUT(
-//       `/api/rutas/clientes/${idClientes}`,
-//       data
-//     );
-//     const addClientes = response.clientes._id;
-
-//     if (addClientes !== idClientes) {
-//       const msg = "El cliente NOO fue actualizado correctamente";
-//       swal({
-//         title: "Error",
-//         text: msg,
-//         icon: "error",
-//         buttons: {
-//           confirm: {
-//             text: "Ok",
-//             value: true,
-//             visible: true,
-//             className: "btn btn-danger",
-//             closeModal: true,
-//           },
-//         },
-//       });
-//     } else {
-//       navigate("/clientes");
-//       const msg = "El cliente fue actualizado correctamente";
-//       swal({
-//         title: "Información",
-//         text: msg,
-//         icon: "success",
-//         buttons: {
-//           confirm: {
-//             text: "Ok",
-//             value: true,
-//             visible: true,
-//             className: "btn btn-primary",
-//             closeModal: true,
-//           },
-//         },
-//       });
-//     }
-//   };
-
-//   const onSubmit = (e) => {
-//     e.preventDefault();
-//     addClientes();
-//   };
-
-//   return (
-//     <div>
-//       <Navbar></Navbar>
-//       <SidebarContainer></SidebarContainer>
-//       <div className="content-wrapper"> </div>
-
-//       <ContentHeader
-//         titulo={"Agregar Clientes"}
-//         breadCrumb1={"Listado de Clientes"}
-//         breadCrumb2={"Creacion"}
-//         ruta1={"/clientes/agregar"}
-//       ></ContentHeader>
-//     </div>
-//   );
-// };
-
-// export default EditarClientes;
+export default ModificarCliente;
